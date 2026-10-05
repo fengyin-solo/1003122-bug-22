@@ -28,6 +28,24 @@ class EntryPayload(BaseModel):
     remark: str | None = None
 
 
+class ImportReceipt(BaseModel):
+    """台账文件导入回执：逐行说明入账、跳过、退回情况。"""
+
+    total: int = 0
+    imported: int = 0
+    skipped: int = 0
+    rejected: int = 0
+    rows: list[dict[str, Any]] = Field(default_factory=list)
+    message: str = ""
+
+
+class ImportPayload(BaseModel):
+    """台账文件导入：filename 用于判断口径，content 为文件原文（CSV 或 JSON）。"""
+
+    filename: str | None = None
+    content: str = ""
+
+
 
 class MineareaEntry(BaseModel):
     """矿区明细结构。"""

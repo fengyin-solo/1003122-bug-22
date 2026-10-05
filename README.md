@@ -76,3 +76,20 @@ npm run dev
   `backend/app/routers/<模块>.py`，业务规则在 `backend/app/services/<模块>.py`。
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
+
+### 监测分站台账导入导出
+
+监测分站的通信地址与接入传感器清单从设备台账导出再导入，口径统一如下：
+
+- `GET /api/monitorstation/template` 下载导入模板，表头顺序与设备台账明细一致：
+  分站编号、分站名称、所在位置、通信地址、接入传感器、信号强度、后备电源、分站状态。
+- `POST /api/monitorstation/import` 导入 CSV/JSON 文件（`{ filename, content }`）：
+  - 先做文件级校验（空文件、表头不符、JSON 非法整批不落库，返回 422 并说明原因）；
+  - 行级校验不通过（缺必填、通信地址与接入传感器数量不符）只退回该行，其余行照常入账；
+  - 分站编号或分站名称重复即同一分站：库内已存在则跳过，文件内重复只留第一条；
+  - 响应为逐行回执 `{ total, imported, skipped, rejected, rows, message }`，
+    `rows` 逐行给出文件行号与「入账/跳过/退回」原因。
+- `GET /api/monitorstation/export` 导出 CSV，字段顺序与模板一致，导出再导入内容不变。
+- 列表与详情都取自同一次落库的记录（`MonitorstationService._view` 统一口径）。
+- `GET /api/monitorstation/link-report` 为链路运行报表：分站状态变化即时同步，
+  存量分站在服务启动时按「接入时间」回填。
