@@ -16,9 +16,13 @@ class Store:
         }
 
     def module_names(self) -> list[str]:
-        return sorted(self._tables)
+        return sorted(name for name in self._tables if not name.startswith("monitorstation_"))
 
     def rows(self, module: str) -> list[dict[str, Any]]:
+        return self._tables.setdefault(module, [])
+
+    def hidden_rows(self, module: str) -> list[dict[str, Any]]:
+        """读取不进入运营概览的内部支撑表，例如链路运行报表。"""
         return self._tables.setdefault(module, [])
 
     def find(self, module: str, entry_id: int) -> dict[str, Any] | None:

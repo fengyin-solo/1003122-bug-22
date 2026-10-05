@@ -241,9 +241,11 @@ class MonitorstationEntry(BaseModel):
     field_2: str | None = None  # 所在位置
     field_3: str | None = None  # 通信地址
     field_4: str | None = None  # 接入传感器
-    field_5: str | None = None  # 信号强度
-    field_6: str | None = None  # 后备电源
-    field_7: str | None = None  # 分站状态
+    field_5: int | None = None  # 传感器数量
+    field_6: str | None = None  # 信号强度
+    field_7: str | None = None  # 后备电源
+    field_8: str | None = None  # 分站状态
+    field_9: str | None = None  # 接入时间
 
 class CertificateEntry(BaseModel):
     """持证人员明细结构。"""
